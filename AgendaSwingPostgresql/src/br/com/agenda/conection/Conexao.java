@@ -16,7 +16,7 @@ public class Conexao {
 	    
 	    public Conexao() {     
 	        url="jdbc:postgresql://localhost:5432/Agenda";
-	        usr="postgresql";
+	        usr="postgres";
 	        pass="1234";
 	    }
 	    
