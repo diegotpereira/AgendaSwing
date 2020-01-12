@@ -4,6 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.Statement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -11,15 +15,20 @@ import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
+import br.com.agenda.conection.Conexao;
 import br.com.agenda.dao.PessoaDao;
 import br.com.agenda.models.Pessoa;
 
 public class frmCadastro extends JFrame {
+	
+	private Pessoa pessoa = null;
+    private PessoaDao pessoadao = new PessoaDao();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -110,11 +119,15 @@ public class frmCadastro extends JFrame {
 		btnInserir = new JButton("Insert");
 		btnInserir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Pessoa pessoa = new Pessoa();
-				PessoaDao dao = new PessoaDao();
-				dao.insert(pessoa);
+				InserirDados();
+				
 			}
 		});
+		
+		
+		
+			
+		
 
 		btnLimpar = new JButton("Limpar");
 		btnLimpar.addActionListener(new ActionListener() {
@@ -366,12 +379,30 @@ public class frmCadastro extends JFrame {
 												.addComponent(btnBusca))
 								.addContainerGap()));
 		panel.setLayout(gl_panel);
-		
-		
 			}
 	
-	// Este Metodo Limpa os campos
+	
+	public void InserirDados() {
+		// TODO Auto-generated method stub
+		// * Pega os dados informado no formulário.		
+		Pessoa pessoa = new Pessoa();
+		pessoa.setMatricula(Integer.parseInt(entCodigo.getText()));
+		pessoa.setNome(txtNome.getText());
+		pessoa.setCPF(entCPF.getText());
+		pessoa.setTelefone(entTelefone.getText());
+		pessoa.setLogradouro(entLogradouro.getText());
+		pessoa.setNumero(Integer.parseInt(entNumero.getText()));
+		pessoa.setBairro(entBairro.getText());
+		pessoa.setCidade(entCidade.getText());
+		pessoa.setEstado(entEstado.getText());
+		pessoadao.insert(pessoa);
+		JOptionPane.showMessageDialog(null, "Dados Salvos com Sucesso!");
+	}
+
+	    // Este Metodo Limpa os campos
+	
 		public void limpaCampos() {
+	
 			entCodigo.setText("");
 			txtNome.setText("");
 			entCPF.setText("");
@@ -382,5 +413,4 @@ public class frmCadastro extends JFrame {
 			entCidade.setText("");
 			entEstado.setText("");
 		}
-
 }
