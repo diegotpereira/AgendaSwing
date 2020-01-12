@@ -8,6 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
@@ -19,6 +24,7 @@ import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
@@ -98,7 +104,7 @@ public class frmBusca extends JFrame {
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ativarCampos();
-//				BuscaDados();
+				BuscaDados();
 
 			}
 		});
@@ -150,14 +156,14 @@ public class frmBusca extends JFrame {
 		btnExcluir = new JButton("Excluir");
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				ExcluirDados();
+				ExcluirDados();
 			}
 		});
 
 		btnAlterar = new JButton("Alterar");
 		btnAlterar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				AlterarDados();
+				AlterarDados();
 			}
 		});
 
@@ -550,5 +556,226 @@ public class frmBusca extends JFrame {
 						}
 					});
 		}
+		
+		// Busca os dados no BD
+		public void BuscaDados() {
+			boolean consulta = true;
 
+			try {
+				// * Driver conector MySQL.
+				Class.forName("org.postgresql.Driver");
+
+				// * Conexão BD
+				Connection con = DriverManager.getConnection(
+						"jdbc:postgresql://localhost:5432/Agenda", "postgres","1234");
+
+				Statement stmt = con.createStatement();
+
+				// * Entras de dados no campo codigo do formulário.
+				int BuscaCodigo = Integer.parseInt(entBusca.getText());
+				String BuscaCPF = entBusca.getText();
+
+				ResultSet RS = null;
+
+				// Escolha a Opção de Busca.
+				if (opcaoBusca.getSelectedIndex() == 0) {
+					JOptionPane.showMessageDialog(null,
+							"Escolha uma Opção de Busca!");
+
+				} else if (opcaoBusca.getSelectedIndex() == 1) {
+					RS = stmt
+							.executeQuery("Select * from TabFicha where Matricula = "
+									+ BuscaCodigo);
+
+					while (RS.next()) {
+
+						// * Exibe os valore retornados na consulta.
+
+						// * Pega a Matricula.
+						int Mat = RS.getInt("Matricula");
+
+						// * Conver inteiro para String
+						saidaCodigo.setText(String.valueOf(Mat));
+
+						// Pega os demais.
+						saidaNome.setText(RS.getString("Nome"));
+						saidaCPF.setText(RS.getString("CPF"));
+						saidaTelefone.setText(RS.getString("Telefone"));
+						saidaLogradouro.setText(RS.getString("Logradouro"));
+						saidaNumero.setText(RS.getString("Numero"));
+						saidaBairro.setText(RS.getString("Bairro"));
+						saidaCidade.setText(RS.getString("Cidade"));
+						saidaEstado.setText(RS.getString("Estado"));
+
+						consulta = false;
+						JOptionPane.showMessageDialog(null, "Dados Encontrado!");
+
+					}
+
+				} else if (opcaoBusca.getSelectedIndex() == 2) {
+					RS = stmt.executeQuery("Select * from TabFicha where CPF = "
+							+ BuscaCPF);
+
+					while (RS.next()) {
+
+						// * Pega o CPF.
+						String CPF = RS.getString("CPF");
+						saidaCPF.setText(CPF);
+
+						// * Exibe os valore retornados na consulta.
+						saidaNome.setText(RS.getString("Nome"));
+						saidaCodigo.setText(RS.getString("Matricula"));
+						saidaTelefone.setText(RS.getString("Telefone"));
+						saidaLogradouro.setText(RS.getString("Logradouro"));
+						saidaNumero.setText(RS.getString("Numero"));
+						saidaBairro.setText(RS.getString("Bairro"));
+						saidaCidade.setText(RS.getString("Cidade"));
+						saidaEstado.setText(RS.getString("Estado"));
+
+						consulta = false;
+						JOptionPane.showMessageDialog(null, "Dados Encontrado!");
+
+					}
+
+				}
+
+				if (consulta) {
+					JOptionPane.showMessageDialog(null, "Dados não Encontrados!");
+
+				}
+				RS.close();
+				stmt.close();
+
+				// * Fecha conexão com DB.
+				con.close();
+
+			} catch (SQLException Erro) {
+				JOptionPane.showMessageDialog(null,
+						"Erro Cmdo SQL" + Erro.getMessage());
+
+			} catch (ClassNotFoundException Erro) {
+				JOptionPane.showMessageDialog(null, "Driver não Encontrado!");
+
+			}
+		}
+		
+		// Altera os dados no BD
+		public void AlterarDados() {
+			try {
+				// * Drive Conector MySQL.
+				Class.forName("com.mysql.jdbc.Driver");
+
+				// * Conexão como BD.
+				Connection con = DriverManager.getConnection(
+						"jdbc:mysql://localhost/BDCadastro", "root", "210712");
+
+				// * Objeto comdo SQL.
+				Statement stmt = con.createStatement();
+
+				// * Opção de Entrada para Alterar.
+				int consMatricula = Integer.parseInt(entBusca.getText());
+				String consCPF = entBusca.getText();
+
+				// * Pega os dados no formulário.
+				int cadMat = Integer.parseInt(saidaCodigo.getText());
+				String cadNome = saidaNome.getText();
+				String cadCPF = saidaCPF.getText();
+				String cadTelefone = saidaTelefone.getText();
+				String cadLogradouro = saidaLogradouro.getText();
+				int cadNumero = Integer.parseInt(saidaNumero.getText());
+				String cadBairro = saidaBairro.getText();
+				String cadCidade = saidaCidade.getText();
+				String cadEstado = saidaEstado.getText();
+
+				// Escolha a Opção de Busca.
+				if (opcaoBusca.getSelectedIndex() == 1) {
+					int registro = stmt.executeUpdate("update TabFicha set "
+							+ "Nome='" + cadNome + "',CPF='" + cadCPF
+							+ "',Telefone='" + cadTelefone + "',Logradouro='"
+							+ cadLogradouro + "',Numero='" + cadNumero
+							+ "',Bairro='" + cadBairro + "',Cidade='" + cadCidade
+							+ "',Estado='" + cadEstado + "', Matricula=" + cadMat
+							+ " where Matricula=" + consMatricula);
+
+					if (registro != 0)
+						JOptionPane.showMessageDialog(null, "Dados Alterados!");
+
+					else
+						JOptionPane.showMessageDialog(null, "Dados Não Alterados!");
+					stmt.close();
+
+					// * Fecha conexão com BD.
+					con.close();
+
+				} else if (opcaoBusca.getSelectedIndex() == 2) {
+					int registro = stmt.executeUpdate("update TabFicha set "
+							+ "Matricula='" + cadMat + "',Nome='" + cadNome
+							+ "',Telefone='" + cadTelefone + "',Logradouro='"
+							+ cadLogradouro + "',Numero='" + cadNumero
+							+ "',Bairro='" + cadBairro + "',Cidade='" + cadCidade
+							+ "',Estado='" + cadEstado + "',CPF=" + cadCPF
+							+ "where CPF=" + consCPF);
+
+					if (registro != 0)
+						JOptionPane.showMessageDialog(null, "Dados Alterados!");
+
+					else
+						JOptionPane.showMessageDialog(null, "Dados NãoAlterados!");
+					stmt.close();
+
+					// * Fecha conexão com BD.
+					con.close();
+				}
+
+			} catch (SQLException Erro) {
+				JOptionPane.showMessageDialog(null,
+						"Erro Cmdo SQL" + Erro.getMessage());
+
+			} catch (ClassNotFoundException e) {
+				JOptionPane.showMessageDialog(null, "Driver não encontrado");
+			}
+		}
+		
+		// Exclui dados no BD
+		public void ExcluirDados() {
+			try {
+				// * Drive Conector MySQL.
+				Class.forName("org.postgresql.Driver");
+
+				// * Conexão como BD.
+				Connection con = DriverManager.getConnection(
+						"jdbc:postgresql://localhost:5432/Agenda", "postgres","1234");
+
+				// * Objeto comdo SQL.
+				Statement stmt = con.createStatement();
+
+				int excluirMatricula = Integer.parseInt(entBusca.getText());
+				int registro = stmt
+						.executeUpdate("delete from TabFicha where Matricula="
+								+ excluirMatricula);
+
+				if (registro != 0) {
+					JOptionPane.showMessageDialog(null, "Dados Excluido!");
+					limpar();
+
+				} else {
+					JOptionPane.showMessageDialog(null, "Dados não Excluidos!");
+				}
+				stmt.close();
+
+				// * Limpar a caixa de Texto.
+				limpar();
+
+				// * Fecha conexão com o BD.
+				con.close();
+
+			} catch (SQLException Erro) {
+				JOptionPane.showMessageDialog(null,
+						"Erro Cmdo SQL" + Erro.getMessage());
+
+			} catch (ClassNotFoundException Erro) {
+				JOptionPane.showMessageDialog(null, "Driver não Encontrado!");
+
+			}
+		}
 }
