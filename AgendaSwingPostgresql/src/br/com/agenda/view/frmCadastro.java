@@ -16,12 +16,15 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
+import br.com.agenda.dao.PessoaDao;
+import br.com.agenda.models.Pessoa;
+
 public class frmCadastro extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField entCodigo;
-	private JTextField entNome;
+	private JTextField txtNome;
 	private JTextField entLogradouro;
 	private JTextField entBairro;
 	private JTextField entCidade;
@@ -87,8 +90,8 @@ public class frmCadastro extends JFrame {
 		entCodigo = new JTextField();
 		entCodigo.setColumns(10);
 
-		entNome = new JTextField();
-		entNome.setColumns(10);
+		txtNome = new JTextField();
+		txtNome.setColumns(10);
 
 		entLogradouro = new JTextField();
 		entLogradouro.setColumns(10);
@@ -101,11 +104,15 @@ public class frmCadastro extends JFrame {
 
 		entNumero = new JTextField();
 		entNumero.setColumns(10);
+		
+		
 
-		btnInserir = new JButton("Inserir");
+		btnInserir = new JButton("Insert");
 		btnInserir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				Insere.Principal();
+				Pessoa pessoa = new Pessoa();
+				PessoaDao dao = new PessoaDao();
+				dao.insert(pessoa);
 			}
 		});
 
@@ -120,9 +127,9 @@ public class frmCadastro extends JFrame {
 		btnBusca.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Cria e Instancia o objeto da class Busca
-//				Busca b = new Busca();
+				frmBusca b = new frmBusca();
 				// JFrame visivel
-//				b.setVisible(true);
+				b.setVisible(true);
 			}
 		});
 
@@ -256,7 +263,7 @@ public class frmCadastro extends JFrame {
 																										183,
 																										GroupLayout.PREFERRED_SIZE))
 																				.addComponent(
-																						entNome,
+																						txtNome,
 																						GroupLayout.DEFAULT_SIZE,
 																						558,
 																						Short.MAX_VALUE))))
@@ -281,7 +288,7 @@ public class frmCadastro extends JFrame {
 												Alignment.BASELINE)
 												.addComponent(lblNome)
 												.addComponent(
-														entNome,
+														txtNome,
 														GroupLayout.PREFERRED_SIZE,
 														GroupLayout.DEFAULT_SIZE,
 														GroupLayout.PREFERRED_SIZE))
@@ -366,7 +373,7 @@ public class frmCadastro extends JFrame {
 	// Este Metodo Limpa os campos
 		public void limpaCampos() {
 			entCodigo.setText("");
-			entNome.setText("");
+			txtNome.setText("");
 			entCPF.setText("");
 			entTelefone.setText("");
 			entLogradouro.setText("");
