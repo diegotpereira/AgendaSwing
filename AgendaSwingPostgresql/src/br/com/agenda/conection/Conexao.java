@@ -1,6 +1,7 @@
 package br.com.agenda.conection;
 
 import java.sql.Connection;
+
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,58 +9,35 @@ import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 
+
+
+
 public class Conexao {
 	
-	 private String url;
-	    private String usr;
-	    private String pass;
-	    
-	    public Conexao() {     
-	        url="jdbc:postgresql://localhost:5432/Agenda";
-	        usr="postgres";
-	        pass="1234";
-	    }
-	    
-	    private Connection getConnection(){
-	        try {
-	            Class.forName("org.postgresql.Driver");
-	           
-	            Connection con = DriverManager.getConnection(url, usr, pass);
-	            return con;
-	        }catch(ClassNotFoundException ex){
-	            JOptionPane.showMessageDialog(null, "O driver não foi encontrado", "Erro", JOptionPane.ERROR_MESSAGE);
-	            return null;
-	        }catch(SQLException ex){
-	            JOptionPane.showMessageDialog(null, "Problemas com a conexão\n"+ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-	            return null;
-	        }
-	    }
-	 
-	    public int executeUpdate(String query){
-	        try{
-	            Connection con = getConnection();
-	            Statement stm = con.createStatement();
-	            System.out.println(query);
-	            int res=stm.executeUpdate(query);
-	            con.close();
-	            return res;
-	        }catch(SQLException ex){
-	            JOptionPane.showMessageDialog(null, "Problemas com a conexão\n"+ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-	            return 0;
-	        }
-	    }
-	 
-	    public ResultSet executeQuery(String query){
-	        try{
-	            Connection con = getConnection();
-	            Statement stm = con.createStatement();
-	            ResultSet rs = stm.executeQuery(query);
-	            //con.close();
-	            return rs;
-	        }catch(SQLException ex){
-	            JOptionPane.showMessageDialog(null, "Problemas com a conexão\n"+ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-	            return null;
-	        }
-	    }
-
+	public Conexao(){
+	      
+	      
+    }
+    
+    Connection conec;
+  
+public Connection getCon(){
+      
+      try {
+          Class.forName("org.postgresql.Driver");
+          conec  = DriverManager.getConnection("jdbc:postgresql://localhost:5432/agenda", "postgres","1234");
+      } catch (ClassNotFoundException | SQLException ex) {
+          System.out.println(ex.getMessage());
+      }
+      return conec;
+  }  
+ public void confirmar() throws SQLException {
+      try {
+          conec.commit();
+      } catch (SQLException e) {
+          throw new SQLException("Problemas na instrução SQL.\n" + e.getMessage());
+      } finally {
+          conec.close();
+      }
+  }
 }
